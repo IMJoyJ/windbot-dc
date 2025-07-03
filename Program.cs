@@ -99,21 +99,25 @@ namespace WindBot
     {
 #endif
                     HttpListenerContext ctx = MainServer.GetContext();
+                    
+                    int dialogNum=0;
+                    while (File.Exists($"Dialogs/Lucky{dialogNum}.zh-CN.json"))
+                    {
+                        dialogNum++;
+                    }
 
                     WindBotInfo Info = new WindBotInfo();
                     string RawUrl = Path.GetFileName(ctx.Request.RawUrl);
-                    Info.Name = HttpUtility.ParseQueryString(RawUrl).Get("name");
-                    Info.Deck = HttpUtility.ParseQueryString(RawUrl).Get("deck");
+                    string name = HttpUtility.ParseQueryString(RawUrl).Get("name");
+                    int selectedDialog = Math.Abs(name.GetHashCode() % dialogNum);
+                    Info.Name = name;
+                    Info.Deck = "Lucky";
                     Info.Host = HttpUtility.ParseQueryString(RawUrl).Get("host");
                     string port = HttpUtility.ParseQueryString(RawUrl).Get("port");
                     if (port != null)
                         Info.Port = Int32.Parse(port);
-                    string deckfile = HttpUtility.ParseQueryString(RawUrl).Get("deckfile");
-                    if (deckfile != null)
-                        Info.DeckFile = deckfile;
-                    string dialog = HttpUtility.ParseQueryString(RawUrl).Get("dialog");
-                    if (dialog != null)
-                        Info.Dialog = dialog;
+                    Info.DeckFile = "Lucky";
+                    Info.Dialog = $"Lucky{selectedDialog}.zh-CN";
                     string version = HttpUtility.ParseQueryString(RawUrl).Get("version");
                     if (version != null)
                         Info.Version = Int16.Parse(version);
